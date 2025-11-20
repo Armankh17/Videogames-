@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ game.game_name }} - Details</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; }
+        h1 { color: #333; }
+        p { line-height: 1.5; }
+        a { text-decoration: none; color: #007BFF; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<h1>{{ game.game_name }}</h1>
+
+<p><strong>Description:</strong><br>
+{{ game.game_description | nl2br }}</p>
+
+<p><strong>Date Released:</strong> {{ game.released_date }}</p>
+<p><strong>Rating:</strong> {{ game.rating }}</p>
+
+<p><a href="games_list.php">Back to all games</a></p>
+
+</body>
+</html>

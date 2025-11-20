@@ -1,41 +1,32 @@
 <?php
-// Connect to database
+require_once __DIR__ . '/vendor/autoload.php';
 include("db_connect.php");
 
-// Get the game ID from URL
-$id = $_GET['id'];
+// Twig setup
+$loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/templates');
+$twig = new \Twig\Environment($loader, [
+    'cache' => false,
+]);
 
-// Fetch the game data
-$result = mysqli_query($mysqli, "SELECT * FROM videogames WHERE id=$id");
-$game = mysqli_fetch_assoc($result);
-?>
+// Get game ID
+$id = $_GET['id'] ?? null;
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Game</title>
-</head>
-<body>
+if (!$id) {
+    die("Game ID not provided.");
+}
 
-<h1>Edit Game</h1>
+// Fetch game
+$stmt = $mysqli->prepare("SELECT * FROM videogames WHERE id = ?");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$result = $stmt->get_result();
+$game = $result->fetch_assoc();
 
-<form action="update-game.php" method="post">
-    <input type="hidden" name="id" value="<?php echo $game['id']; ?>">
+if (!$game) {
+    die("Game not found.");
+}
 
-    Game Name:<br>
-    <input type="text" name="GameName" value="<?php echo $game['game_name']; ?>"><br><br>
-
-    Description:<br>
-    <textarea name="GameDescription" rows="5" cols="40"><?php echo $game['game_description']; ?></textarea><br><br>
-
-    Date Released:<br>
-    <input type="date" name="DateReleased" value="<?php echo $game['released_date']; ?>"><br><br>
-
-    Rating:<br>
-    <input type="number" name="GameRating" value="<?php echo $game['rating']; ?>"><br><br>
-
-    <input type="submit" value="Update Game">
-</form>
-
-</body>
-</html>
+// Render Twig template and pass data
+echo $twig->render('edit-game-form.twig', [
+    'game' => $game
+]);
